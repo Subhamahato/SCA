@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Dashboard | Subham Coaching Academy</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Theme Initialization Script -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+
+    <style>
+        :root {
+            --primary: #4facfe;
+            --primary-dark: #00f2fe;
+            
+            /* Light Theme */
+            --bg-main: #f3f4f6;
+            --bg-gradient: radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,0.1) 0, transparent 50%);
+            --bg-appbar: rgba(255, 255, 255, 0.85);
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --bg-modal: #ffffff;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --item-bg: rgba(0, 0, 0, 0.05);
+            --btn-bg: rgba(0, 0, 0, 0.05);
+            --shadow-color: rgba(0, 0, 0, 0.05);
+            
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --solid-bg: #ffffff; 
+        }
+
+        .dark {
+            /* Dark Theme (Slate 900/800) */
+            --bg-main: #0f172a;
+            --bg-gradient: radial-gradient(at 0% 0%, hsla(253,16%,15%,0.3) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,40%,0.1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,40%,0.1) 0, transparent 50%);
+            --bg-appbar: rgba(15, 23, 42, 0.85);
+            --bg-card: rgba(30, 41, 59, 0.75);
+            --bg-modal: linear-gradient(135deg, #1e293b, #0f172a);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --item-bg: rgba(0, 0, 0, 0.2);
+            --btn-bg: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            
+            --success: #00e676;
+            --warning: #ffb300;
+            --danger: #ff4d4d;
+            --solid-bg: #1e293b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-main);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: none; 
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .app-container {
+            width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh;
+            position: relative; overflow-x: hidden; padding-bottom: 40px;
+        }
+
+        .app-bar {
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;
+            background: var(--bg-appbar); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .brand-title { 
+            display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+        }
+        .brand-subtitle {
+            font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; 
+            letter-spacing: 1.5px; font-weight: 600; line-height: 1;
+        }
+        .brand-main {
+            font-size: 1.1rem; font-weight: 600; color: var(--primary); 
+            display: flex; align-items: center; gap: 8px;
+        }
+        
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+
+        .theme-btn {
+            width: 38px; height: 38px; border-radius: 10px; background: var(--btn-bg); border: 1px solid var(--border-color);
+            color: var(--primary); display: flex; justify-content: center; align-items: center; cursor: pointer;
+            transition: 0.2s; font-size: 1.1rem;
+        }
+        .theme-btn:active { transform: scale(0.95); }
+
+        .profile-trigger {
+            width: 40px; height: 40px; background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; overflow: hidden;
+            cursor: pointer; border: 2px solid var(--primary); box-shadow: 0 4px 10px var(--shadow-color); transition: transform 0.2s;
+        }
+        .profile-trigger:active { transform: scale(0.95); }
+        .profile-trigger i { color: #0f172a; font-size: 1.3rem; }
+
+        .content { padding: 20px 25px; }
+
+        .greeting-section { margin-bottom: 25px; }
+        
+        .stylish-name {
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            line-height: 1.2; 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 4px 15px rgba(79, 172, 254, 0.2);
+            margin-bottom: 8px;
+            word-wrap: break-word;
+        }
+
+        .date-badge {
+            display: inline-flex; align-items: center; gap: 6px; 
+            background: var(--item-bg); padding: 5px 12px; 
+            border-radius: 20px; font-size: 0.75rem; color: var(--text-muted);
+            border: 1px solid var(--border-color); font-weight: 500;
+        }
+
+        .fee-alert-box {
+            display: flex; align-items: flex-start; gap: 15px; padding: 20px;
+            border-radius: 15px; margin-bottom: 25px; border: 1px solid; transition: all 0.3s ease;
+        }
+        .fee-alert-success { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+        .fee-alert-success .alert-icon i { color: var(--success); }
+        .fee-alert-success h3 { color: var(--success); }
+        .fee-alert-danger { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.4); }
+        .fee-alert-danger .alert-icon i { color: var(--danger); }
+        .fee-alert-danger h3 { color: var(--danger); }
+        .alert-icon { font-size: 1.6rem; margin-top: 2px; }
+        .alert-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+        .alert-content p { font-size: 0.85rem; color: var(--text-main); line-height: 1.5; opacity: 0.9;}
+
+        .expandable-card {
+            background: var(--bg-card); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color); border-radius: 20px; margin-bottom: 15px;
+            box-shadow: 0 8px 24px 0 var(--shadow-color); overflow: hidden; transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .card-summary {
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; background: transparent; transition: background 0.3s;
+        }
+        .card-summary:active { background: var(--item-bg); }
+        
+        .summary-info { display: flex; align-items: center; gap: 15px; }
+        .summary-icon {
+            width: 45px; height: 45px; border-radius: 12px; background: rgba(79, 172, 254, 0.15);
+            color: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 1.3rem;
+        }
+        .summary-text h3 { font-size: 1.05rem; font-weight: 500; margin-bottom: 3px; color: var(--text-main); }
+        .summary-text p { font-size: 0.8rem; color: var(--text-muted); }
+        .chevron { color: var(--text-muted); font-size: 1.2rem; transition: transform 0.3s ease; }
+
+        .card-details {
+            max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease;
+            padding: 0 20px; background: var(--item-bg);
+        }
+        .card-details.open { padding: 0 20px 20px 20px; border-top: 1px solid var(--border-color); }
+
+        .data-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .data-row:last-child { border-bottom: none; }
+        .data-label { color: var(--text-muted); font-size: 0.85rem; }
+        .data-value { font-weight: 500; font-size: 0.9rem; text-align: right; color: var(--text-main); }
+        .sync-pending { text-align: center; font-size: 0.85rem; color: var(--text-muted); padding: 15px 0; font-style: italic; }
+
+        .lib-btn {
+            background: linear-gradient(to right, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff; border: none; padding: 12px 25px; border-radius: 12px; margin-top: 5px;
+            font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: 0.2s;
+            display: inline-flex; justify-content: center; align-items: center; gap: 10px;
+            width: 100%; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        .lib-btn:active { transform: scale(0.97); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            z-index: 100; opacity: 0; visibility: hidden; transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: flex-end;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .profile-sheet {
+            background: var(--bg-modal); width: 100%; max-width: 480px; margin: 0 auto;
+            border-radius: 30px 30px 0 0; padding: 30px 25px; border-top: 1px solid var(--border-color);
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); position: relative;
+        }
+        .modal-overlay.active .profile-sheet { transform: translateY(0); }
+        .close-btn {
+            position: absolute; top: 20px; right: 25px; width: 35px; height: 35px; background: var(--btn-bg); border-radius: 50%; border: 1px solid var(--border-color);
+            display: flex; justify-content: center; align-items: center; color: var(--text-main); cursor: pointer; font-size: 1.2rem;
+            transition: 0.2s; z-index: 10;
+        }
+        .close-btn:active { background: var(--item-bg); }
+        
+        .profile-header { text-align: center; margin-bottom: 25px; }
+        .large-avatar {
+            width: 80px; height: 80px; background: linear-gradient(135deg, #e0eafc, #cfdef3); border-radius: 50%; margin: 0 auto 15px; overflow: hidden;
+            display: flex; justify-content: center; align-items: center; border: 3px solid var(--primary); box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        .large-avatar i { color: #0f172a; font-size: 2.5rem; }
+        .profile-header h2 { font-size: 1.4rem; font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
+        .profile-header p { color: var(--primary); font-size: 0.9rem; font-weight: 500; }
+        .academic-list { background: var(--item-bg); border: 1px solid var(--border-color); border-radius: 15px; padding: 10px 20px; margin-bottom: 25px; }
+        .logout-btn {
+            width: 100%; padding: 15px; border: none; border-radius: 12px; background: rgba(239, 68, 68, 0.1); color: var(--danger);
+            font-size: 1rem; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; border: 1px solid rgba(239, 68, 68, 0.3); transition: 0.3s;
+        }
+
+        .table-modal-overlay { justify-content: center; padding: 20px; }
+        .table-modal-box {
+            background: var(--bg-modal);
+            width: 100%; max-width: 480px; max-height: 85vh; margin: auto;
+            border-radius: 20px; padding: 25px 20px; border: 1px solid var(--border-color);
+            position: relative; box-shadow: 0 15px 35px var(--shadow-color);
+            display: flex; flex-direction: column;
+            transform: scale(0.95); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
+        }
+        .modal-overlay.active .table-modal-box { transform: scale(1); opacity: 1; }
+        
+        .excel-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
+        .excel-table th { padding: 10px 8px; color: var(--primary); font-weight: 600; }
+        .excel-table td { padding: 8px; border: 1px solid var(--border-color); color: var(--text-main); vertical-align: middle; }
+
+        /* Payment Desk Button Styling */
+        .upi-pay-btn {
+            display: block; width: 100%; background: linear-gradient(to right, var(--success), #059669);
+            color: #fff; padding: 12px; border-radius: 10px; font-size: 0.95rem; font-weight: 600;
+            text-align: center; text-decoration: none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: transform 0.2s;
+        }
+        .upi-pay-btn:active { transform: scale(0.97); }
+    </style>
+    <script>
+        const studentDataStr = sessionStorage.getItem('loggedInStudent');
+        if (!studentDataStr) { window.location.replace('index.html'); } 
+        else { document.addEventListener('DOMContentLoaded', () => { document.body.style.display = 'block'; }); }
+        const studentData = JSON.parse(studentDataStr || '{}');
+    </script>
+</head>
+<body>
+
+<div class="app-container">
+    <header class="app-bar">
+        <div class="brand-title">
+            <span class="brand-subtitle">Subham Coaching Academy</span>
+            <div class="brand-main"><i class="fa-solid fa-user-graduate"></i> Student Dashboard</div>
+        </div>
+        <div class="header-actions">
+            <button id="themeToggle" class="theme-btn" title="Toggle Dark Mode">
+                <i class="fa-solid fa-moon" id="themeIcon"></i>
+            </button>
+            <div class="profile-trigger" id="profileTriggerBtn" onclick="openProfile()"><i class="fa-solid fa-circle-user"></i></div>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="greeting-section">
+            <div id="greeting-time" style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500; margin-bottom: 2px;">Good Evening,</div>
+            <h1 id="welcome-name" class="stylish-name">Student Name</h1>
+            <div id="current-date" class="date-badge">
+                <i class="fa-regular fa-calendar"></i> Fetching date...
+            </div>
+        </div>
+
+        <div id="fee-alert-box" class="fee-alert-box" style="display: none;">
+            <div class="alert-icon"><i id="fee-alert-icon" class="fa-solid"></i></div>
+            <div class="alert-content">
+                <h3 id="fee-alert-title">Fee Status</h3>
+                <p id="fee-alert-message">Loading status...</p>
+            </div>
+        </div>
+
+        <!-- 1. Transaction Record -->
+        <div class="expandable-card">
+            <div class="card-summary" onclick="toggleCard(this)">
+                <div class="summary-info">
+                    <div class="summary-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                    <div class="summary-text">
+                        <h3>Transaction Record</h3>
+                        <p id="summary-fee-paid">Cleared Up To: -</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-down chevron"></i>
+            </div>
+            <div class="card-details">
+                <div style="padding-top: 15px;"></div>
+                <div class="data-row">
+                    <span class="data-label">Monthly Tuition Fee</span>
+                    <span class="data-value" id="val-monthly-fee">-</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Last Paid Amount</span>
+                    <span class="data-value" id="val-last-paid">-</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Clearance Date</span>
+                    <span class="data-value" id="val-paid-upto">-</span>
+                </div>
+
+                <!-- Payment Desk Component -->
+                <div id="payment-desk-container" style="display: none; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px; text-align: center;">
+                    <h4 style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px; font-weight:600; text-transform:uppercase; letter-spacing:1px;">
+                        <i class="fa-solid fa-building-columns" style="margin-right:5px;"></i> Payment Desk
+                    </h4>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                        <div onclick="openQRModal()" style="width: 140px; height: 140px; border-radius: 15px; overflow: hidden; border: 2px solid var(--primary); cursor: pointer; position: relative; box-shadow: 0 4px 15px var(--shadow-color); background:#fff; padding: 10px;">
+                            <img src="https://drive.google.com/thumbnail?id=1EbFhl7dl2WqFyLNtWka8uD_3saj6Ye4P&sz=w600" alt="UPI QR Code" style="width: 100%; height: 100%; object-fit: contain;">
+                            <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); color:#fff; font-size:0.65rem; padding:6px; font-weight:500;"><i class="fa-solid fa-magnifying-glass-plus"></i> Tap to Scan</div>
+                        </div>
+
+                        <div style="width: 100%;">
+                            <a id="upi-pay-btn" href="#" class="upi-pay-btn" style="display: none;">
+                                <i class="fa-brands fa-google-pay" style="font-size: 1.2rem; vertical-align: middle; margin-right: 5px;"></i> Pay Pending Fee: ₹<span id="pay-btn-amount">0</span>
+                            </a>
+                            <div id="no-dues-msg" style="font-size: 0.85rem; color: var(--success); font-weight: 500; display: none; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <i class="fa-solid fa-circle-check"></i> All dues are currently cleared.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Billing Cycles Component -->
+                <div id="fee-slots-container" style="display: none; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <h4 style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px;">
+                        <i class="fa-solid fa-clock-rotate-left" style="margin-right:5px;"></i> Billing Cycles
+                    </h4>
+                    <div id="fee-slots-list" style="max-height: 240px; overflow-y: auto; padding-right: 5px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Attendance Tracker -->
+        <div class="expandable-card">
+            <div class="card-summary" onclick="toggleCard(this)">
+                <div class="summary-info">
+                    <div class="summary-icon" style="color: var(--success); background: rgba(16, 185, 129, 0.15);"><i class="fa-solid fa-clipboard-user"></i></div>
+                    <div class="summary-text">
+                        <h3>Attendance</h3>
+                        <p id="summary-attendance">Records syncing...</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-down chevron"></i>
+            </div>
+            <div class="card-details">
+                <div class="sync-pending" id="detail-attendance">
+                    <i class="fa-solid fa-cloud-arrow-down" style="font-size: 1.5rem; margin-bottom: 10px; display: block;"></i>
+                    Detailed daily attendance logs will appear here once the attendance database is linked.
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Results & Report Card -->
+        <div class="expandable-card">
+            <div class="card-summary" onclick="toggleCard(this)">
+                <div class="summary-info">
+                    <div class="summary-icon" style="color: var(--warning); background: rgba(245, 158, 11, 0.15);"><i class="fa-solid fa-award"></i></div>
+                    <div class="summary-text">
+                        <h3>Academic Results</h3>
+                        <p id="summary-results">Recent tests and grades</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-down chevron"></i>
+            </div>
+            <div class="card-details">
+                <div class="sync-pending" id="detail-results">
+                    <i class="fa-solid fa-chart-line" style="font-size: 1.5rem; margin-bottom: 10px; display: block;"></i>
+                    Subject-wise test marks and term report cards are awaiting synchronization.
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Syllabus Progress -->
+        <div class="expandable-card">
+            <div class="card-summary" onclick="toggleCard(this)">
+                <div class="summary-info">
+                    <div class="summary-icon" style="color: #ba68c8; background: rgba(186, 104, 200, 0.15);"><i class="fa-solid fa-bars-progress"></i></div>
+                    <div class="summary-text">
+                        <h3>Syllabus Progress</h3>
+                        <p id="summary-syllabus">Track chapter completion</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-down chevron"></i>
+            </div>
+            <div class="card-details">
+                <div class="sync-pending" id="detail-syllabus">
+                    <i class="fa-solid fa-list-check" style="font-size: 1.5rem; margin-bottom: 10px; display: block;"></i>
+                    Class syllabus tracking will be populated here shortly.
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Study Materials & Library -->
+        <div class="expandable-card">
+            <div class="card-summary" onclick="toggleCard(this)">
+                <div class="summary-info">
+                    <div class="summary-icon" style="color: var(--danger); background: rgba(239, 68, 68, 0.15);"><i class="fa-solid fa-book-open-reader"></i></div>
+                    <div class="summary-text">
+                        <h3>Study Materials</h3>
+                        <p id="summary-materials">Digital Library & Study Materials</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-down chevron"></i>
+            </div>
+            <div class="card-details">
+                <div style="padding: 20px 0; text-align: center;">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Access your digital notes, reference books, and exclusive academic resources securely.</p>
+                    <button class="lib-btn" onclick="secureLibraryLogin()">
+                        <i class="fa-solid fa-book-bookmark"></i> Enter Library Portal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Profile Modal (Hidden) -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="profile-sheet">
+            <div class="close-btn" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></div>
+            <div class="profile-header">
+                <div class="large-avatar" id="modalAvatarBox"><i class="fa-solid fa-user-graduate"></i></div>
+                <h2 id="modal-name">Student Name</h2>
+                <p id="modal-id" style="color:var(--text-muted); font-size:0.9rem;">ID: -</p>
+            </div>
+            <div class="academic-list">
+                <div class="data-row">
+                    <span class="data-label"><i class="fa-solid fa-book" style="margin-right:8px; color:var(--primary)"></i> Class</span>
+                    <span class="data-value" id="val-class">-</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label"><i class="fa-solid fa-users" style="margin-right:8px; color:var(--primary)"></i> Batch/Group</span>
+                    <span class="data-value" id="val-batch">-</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label"><i class="fa-solid fa-school" style="margin-right:8px; color:var(--primary)"></i> School</span>
+                    <span class="data-value" id="val-school">-</span>
+                </div>
+                <div class="data-row" style="border-bottom: none;">
+                    <span class="data-label"><i class="fa-solid fa-calendar-check" style="margin-right:8px; color:var(--primary)"></i> Admitted</span>
+                    <span class="data-value" id="val-admission">-</span>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Secure Logout</button>
+        </div>
+    </div>
+
+    <!-- Syllabus Table Modal -->
+    <div class="modal-overlay table-modal-overlay" id="syllabusTableModal">
+        <div class="table-modal-box">
+            <div class="close-btn" onclick="closeSyllabusTable()"><i class="fa-solid fa-xmark"></i></div>
+            <h3 style="font-size:1.1rem; font-weight:600; color:var(--text-main); margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-table-list" style="color:var(--primary);"></i> Complete Syllabus
+            </h3>
+            <div id="syllabusTableContent" style="flex-grow:1; overflow-y:auto; padding-right:5px;"></div>
+        </div>
+    </div>
+
+    <!-- Full QR Code Zoom Modal -->
+    <div class="modal-overlay table-modal-overlay" id="qrModal">
+        <div style="position: relative; max-width: 320px; width: 100%; margin: auto; transform: scale(0.95); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);" class="qr-zoom-box">
+            <div class="close-btn" onclick="closeQRModal()" style="position:absolute; top:-15px; right:-15px; background:var(--danger); color:#fff; border:none; z-index: 101; box-shadow:0 4px 10px rgba(0,0,0,0.3);"><i class="fa-solid fa-xmark"></i></div>
+            <img src="https://drive.google.com/thumbnail?id=1UODlgBzc4KiV0cHZ2r_82ipx0NByFvEB&sz=w1200" alt="Full UPI QR Code" style="width: 100%; height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: block; background:#fff;">
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- THEME TOGGLE LOGIC ---
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    function updateThemeUI(isDark) {
+        if (isDark) {
+            themeIcon.className = 'fa-solid fa-sun';
+            themeIcon.style.color = '#fbbf24'; 
+        } else {
+            themeIcon.className = 'fa-solid fa-moon';
+            themeIcon.style.color = ''; 
+        }
+    }
+    updateThemeUI(document.documentElement.classList.contains('dark'));
+
+    themeToggleBtn.addEventListener('click', () => {
+        const htmlElement = document.documentElement;
+        htmlElement.classList.toggle('dark');
+        const isDark = htmlElement.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateThemeUI(isDark);
+    });
+
+    // --- CONFIGURE API HERE ---
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPuQFsaVGDBhRJtEXDZmHqpWHPDzeayK47PEbYG46_TVVxn8otZ2Da5IynpHn8PZA/exec'; 
+    
+    function secureLibraryLogin() {
+        sessionStorage.setItem('libraryAuthToken', 'true');
+        window.location.href = 'library.html';
+    }
+
+    function toggleCard(headerEl) {
+        const details = headerEl.nextElementSibling;
+        const chevron = headerEl.querySelector('.chevron');
+        if (details.classList.contains('open')) {
+            details.style.maxHeight = null;
+            details.classList.remove('open');
+            chevron.style.transform = 'rotate(0deg)';
+        } else {
+            details.classList.add('open');
+            details.style.maxHeight = details.scrollHeight + 50 + "px"; 
+            chevron.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    function parseDateDDMMYYYY(dateStr) {
+        if (!dateStr) return null;
+        const parts = dateStr.trim().split('/');
+        if (parts.length === 3) return new Date(parts[2], parts[1] - 1, parts[0]);
+        return null;
+    }
+
+    function formatDateDDMMYYYY(dateObj) {
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const y = dateObj.getFullYear();
+        return `${d}/${m}/${y}`;
+    }
+
+    // --- Dynamic Interactive Calendar Logic ---
+    let currentCalDate = new Date();
+    
+    async function fetchLiveAttendance(dateObj, isInitialLoad = false) {
+        const studentId = studentData['Student ID'];
+        if (!studentId) return;
+
+        const shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const fullMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        const monthIndex = dateObj.getMonth();
+        const year = dateObj.getFullYear();
+        const tabName = `${shortMonths[monthIndex]}_${year}`;
+        const displayTitle = `${fullMonths[monthIndex]} ${year}`;
+
+        const summaryEl = document.getElementById('summary-attendance');
+        const detailEl = document.getElementById('detail-attendance');
+
+        if (!isInitialLoad) {
+            detailEl.innerHTML = `<div style="text-align:center; padding:30px 0;"><i class="fa-solid fa-circle-notch fa-spin" style="font-size:1.5rem; color:var(--primary);"></i></div>`;
+        }
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: "getAttendance", studentId: studentId, tabName: tabName })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const data = result.data;
+                if (isInitialLoad) {
+                    if (data.daysMap && Object.keys(data.daysMap).length > 0) {
+                        summaryEl.innerText = `${displayTitle}: ${data.percentage}% Present`;
+                    } else {
+                        summaryEl.innerText = `${displayTitle}: Records pending...`;
+                    }
+                }
+                renderCalendar(dateObj, displayTitle, data, result.message);
+            } else {
+                renderCalendarError(displayTitle, result.message);
+            }
+        } catch (error) {
+            renderCalendarError(displayTitle, "Unable to connect to server.");
+        }
+    }
+
+    function renderCalendar(dateObj, title, data, noDataMessage) {
+        const detailEl = document.getElementById('detail-attendance');
+        const mIdx = dateObj.getMonth();
+        const yyyy = dateObj.getFullYear();
+        const daysInMonth = new Date(yyyy, mIdx + 1, 0).getDate();
+        const startDay = new Date(yyyy, mIdx, 1).getDay(); 
+        
+        let html = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:15px 5px 0 5px;">
+                <button onclick="changeMonth(-1)" style="background:var(--btn-bg); border:1px solid var(--border-color); width:32px; height:32px; border-radius:50%; color:var(--text-main); cursor:pointer; transition:0.2s;"><i class="fa-solid fa-chevron-left"></i></button>
+                <h4 style="font-weight:600; font-size:1rem; margin:0; color:var(--primary);">${title}</h4>
+                <button onclick="changeMonth(1)" style="background:var(--btn-bg); border:1px solid var(--border-color); width:32px; height:32px; border-radius:50%; color:var(--text-main); cursor:pointer; transition:0.2s;"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        `;
+
+        if (noDataMessage && Object.keys(data.daysMap).length === 0) {
+            html += `<div style="text-align:center; padding: 20px 0; color:var(--text-muted); font-size:0.85rem; font-style:italic;">
+                        <i class="fa-solid fa-calendar-xmark" style="font-size: 2rem; margin-bottom: 10px; opacity:0.5; display:block;"></i>
+                        ${noDataMessage}
+                     </div>`;
+        } else {
+            html += `
+                <div style="display:flex; justify-content:space-around; text-align:center; margin-bottom:15px; background:var(--item-bg); padding:10px; border-radius:12px;">
+                    <div><span style="display:block; font-size:1.4rem; font-weight:bold; color:var(--success);">${data.present}</span><span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Present</span></div>
+                    <div><span style="display:block; font-size:1.4rem; font-weight:bold; color:var(--danger);">${data.absent}</span><span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Absent</span></div>
+                    <div><span style="display:block; font-size:1.4rem; font-weight:bold; color:var(--primary);">${data.percentage}%</span><span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Score</span></div>
+                </div>
+                <div style="display:flex; justify-content:center; gap:15px; margin-bottom:12px; font-size:0.75rem; color:var(--text-muted);">
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:10px; height:10px; border-radius:50%; background:var(--success);"></span> Present</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:10px; height:10px; border-radius:50%; background:var(--danger);"></span> Absent</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><span style="width:10px; height:10px; border-radius:50%; background:var(--warning);"></span> Holiday/Event</div>
+                </div>
+            `;
+        }
+
+        html += `
+            <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; text-align:center; font-size:0.75rem; font-weight:600; color:var(--text-muted); margin-bottom:5px;">
+                <div style="color:var(--warning);">Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; text-align:center;">
+        `;
+        
+        for (let i = 0; i < startDay; i++) html += `<div></div>`;
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            const isSunday = ((startDay + day - 1) % 7 === 0);
+            let status = data.daysMap ? data.daysMap[day] : null;
+            let bgColor = 'var(--item-bg)', textColor = 'var(--text-main)', border = '1px solid var(--border-color)';
+            
+            if (status === 'P') { bgColor = 'rgba(16, 185, 129, 0.15)'; textColor = 'var(--success)'; border = '1px solid rgba(16, 185, 129, 0.3)'; } 
+            else if (status === 'A') { bgColor = 'rgba(239, 68, 68, 0.15)'; textColor = 'var(--danger)'; border = '1px solid rgba(239, 68, 68, 0.4)'; } 
+            else if (status === 'H' || status === 'E' || isSunday) { bgColor = 'rgba(245, 158, 11, 0.15)'; textColor = 'var(--warning)'; border = '1px solid rgba(245, 158, 11, 0.4)'; } 
+            else if (status) { bgColor = 'rgba(245, 158, 11, 0.15)'; textColor = 'var(--warning)'; border = '1px solid rgba(245, 158, 11, 0.4)'; }
+            
+            html += `<div style="background:${bgColor}; color:${textColor}; border:${border}; border-radius:8px; padding:10px 0; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                <span style="font-size:0.85rem; font-weight:600;">${day}</span>
+            </div>`;
+        }
+        
+        html += `</div>`;
+
+        if (data.eventsMap && Object.keys(data.eventsMap).length > 0) {
+            html += `
+                <div style="margin-top: 20px; padding: 15px; background: var(--item-bg); border-radius: 12px; text-align: left; border: 1px solid var(--border-color);">
+                    <h5 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--primary); font-weight: 600;"><i class="fa-solid fa-calendar-star" style="margin-right:5px;"></i> Special Events</h5>
+                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: var(--text-muted);">
+            `;
+            const eventDays = Object.keys(data.eventsMap).sort((a,b) => parseInt(a) - parseInt(b));
+            eventDays.forEach(day => {
+                const monthName = title.split(' ')[0].substring(0,3); 
+                html += `<li style="margin-bottom: 6px; display:flex; gap:10px;"><strong style="color: var(--text-main); min-width: 45px;">${day} ${monthName}:</strong><span>${data.eventsMap[day]}</span></li>`;
+            });
+            html += `</ul></div>`;
+        }
+        
+        detailEl.innerHTML = html;
+        detailEl.className = "";
+        recalculateAccordionHeight(detailEl);
+    }
+
+    function renderCalendarError(title, msg) {
+        const detailEl = document.getElementById('detail-attendance');
+        detailEl.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:15px 5px 0 5px;">
+                <button onclick="changeMonth(-1)" style="background:var(--btn-bg); border:1px solid var(--border-color); width:32px; height:32px; border-radius:50%; color:var(--text-main); cursor:pointer;"><i class="fa-solid fa-chevron-left"></i></button>
+                <h4 style="font-weight:600; font-size:1rem; margin:0; color:var(--primary);">${title}</h4>
+                <button onclick="changeMonth(1)" style="background:var(--btn-bg); border:1px solid var(--border-color); width:32px; height:32px; border-radius:50%; color:var(--text-main); cursor:pointer;"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <div style="text-align:center; padding: 20px 0; color:var(--danger); font-size:0.85rem;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 10px; opacity:0.8; display:block;"></i>${msg}
+            </div>
+        `;
+    }
+
+    function changeMonth(offset) {
+        currentCalDate.setMonth(currentCalDate.getMonth() + offset);
+        fetchLiveAttendance(currentCalDate, false);
+    }
+
+    // --- Dynamic Syllabus Tracking ---
+    let globalSyllabusData = {};
+    let activeSubjectCode = "";
+    const subjNames = { "Sci": "Science", "Mat": "Mathematics", "Eng": "English", "Sst": "Social Sci.", "CS": "Computer Sci." };
+
+    async function fetchLiveSyllabus() {
+        const studentGroup = studentData['Group'];
+        const summaryEl = document.getElementById('summary-syllabus');
+        const detailEl = document.getElementById('detail-syllabus');
+
+        if (!studentGroup) {
+            summaryEl.innerText = "Group missing";
+            detailEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.85rem;">You are not assigned to any group yet.</div>`;
+            return;
+        }
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: "getSyllabus", studentGroup: studentGroup })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                globalSyllabusData = result.data;
+                const subjects = Object.keys(globalSyllabusData);
+                
+                if (subjects.length > 0) {
+                    summaryEl.innerText = `${subjects.length} Subjects Tracking`;
+                    activeSubjectCode = subjects[0]; 
+                    renderSyllabusUI();
+                } else {
+                    summaryEl.innerText = "No syllabus found";
+                    detailEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.85rem;">${result.message || "No data available."}</div>`;
+                }
+            } else {
+                summaryEl.innerText = "Sync Failed";
+                detailEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--danger); font-size:0.85rem;">${result.message}</div>`;
+            }
+        } catch (error) {
+            summaryEl.innerText = "Connection Error";
+            detailEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--danger); font-size:0.85rem;">Unable to connect to server.</div>`;
+        }
+    }
+
+    function switchSubject(subjectCode) {
+        activeSubjectCode = subjectCode;
+        renderSyllabusUI();
+    }
+
+    function toggleTitleScroll(container) {
+        const titleEl = container.querySelector('.ch-title');
+        const wrapEl = titleEl.parentElement;
+        
+        if (titleEl.dataset.scrolling === 'true') {
+            titleEl.style.transform = 'translateX(0px)';
+            titleEl.dataset.scrolling = 'false';
+            const speedMs = parseFloat(titleEl.dataset.speed || 0.4) * 1000;
+            setTimeout(() => {
+                if (titleEl.dataset.scrolling === 'false') { 
+                    titleEl.style.maxWidth = '100%';
+                    titleEl.style.textOverflow = 'ellipsis';
+                    titleEl.style.overflow = 'hidden';
+                }
+            }, speedMs);
+        } else {
+            const diff = titleEl.scrollWidth - wrapEl.clientWidth;
+            if (diff > 0) {
+                titleEl.style.maxWidth = 'none';
+                titleEl.style.textOverflow = 'clip';
+                titleEl.style.overflow = 'visible';
+                titleEl.dataset.scrolling = 'true';
+                
+                const speed = Math.max(1.5, diff / 40); 
+                titleEl.dataset.speed = speed;
+                titleEl.style.transition = `transform ${speed}s linear`;
+                
+                requestAnimationFrame(() => {
+                    titleEl.style.transform = `translateX(-${diff + 15}px)`; 
+                });
+            }
+        }
+    }
+
+    function renderSyllabusUI() {
+        const detailEl = document.getElementById('detail-syllabus');
+        const subjects = Object.keys(globalSyllabusData);
+        
+        let html = `<div style="display:flex; gap:10px; overflow-x:auto; padding:15px 0 10px 0; margin-bottom:15px; border-bottom:1px solid var(--border-color);">`;
+
+        subjects.forEach(sub => {
+            const isActive = sub === activeSubjectCode;
+            const bg = isActive ? 'var(--primary)' : 'var(--btn-bg)';
+            const color = isActive ? '#fff' : 'var(--text-main)';
+            const name = subjNames[sub] || sub;
+            html += `<button onclick="switchSubject('${sub}')" style="background:${bg}; color:${color}; border:1px solid var(--border-color); padding:8px 16px; border-radius:20px; font-size:0.85rem; font-weight:600; cursor:pointer; white-space:nowrap; transition:0.3s;">${name}</button>`;
+        });
+        html += `</div>`;
+
+        const chapters = globalSyllabusData[activeSubjectCode] || [];
+        const total = chapters.length;
+        const completed = chapters.filter(c => c.status.toLowerCase() === 'completed').length;
+        const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+        html += `
+            <div style="margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px;">
+                    <span style="color:var(--text-muted);">Overall Progress</span>
+                    <span style="color:var(--success); font-weight:bold;">${percent}%</span>
+                </div>
+                <div style="width:100%; height:8px; background:var(--item-bg); border-radius:4px; overflow:hidden;">
+                    <div style="width:${percent}%; height:100%; background:var(--success); border-radius:4px; transition:width 0.5s ease-out;"></div>
+                </div>
+                <div style="font-size:0.75rem; color:var(--text-muted); text-align:right; margin-top:5px;">${completed} of ${total} Chapters Completed</div>
+            </div>
+        `;
+
+        html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:0 5px; font-size:0.7rem; color:var(--text-muted); font-weight:500;">
+                <div style="display:flex; gap:6px; align-items:center;"><div style="width:8px; height:8px; border-radius:50%; background:var(--success);"></div> Completed <i class="fa-solid fa-check" style="font-size:0.6rem;"></i></div>
+                <div style="display:flex; gap:6px; align-items:center;"><div style="width:8px; height:8px; border-radius:50%; background:var(--warning);"></div> Ongoing <i class="fa-solid fa-spinner" style="font-size:0.6rem;"></i></div>
+                <div style="display:flex; gap:6px; align-items:center;"><div style="width:8px; height:8px; border-radius:50%; background:var(--danger);"></div> Pending <i class="fa-solid fa-clock" style="font-size:0.6rem;"></i></div>
+            </div>
+        `;
+
+        html += `
+            <button onclick="openSyllabusTable()" style="width:100%; background:var(--item-bg); border:1px solid var(--border-color); color:var(--text-main); padding:10px; border-radius:10px; margin-bottom:15px; cursor:pointer; font-size:0.8rem; display:flex; justify-content:center; align-items:center; gap:8px; transition:0.3s;">
+                <i class="fa-solid fa-table"></i> View All Subjects in Table
+            </button>
+        `;
+
+        html += `<div style="max-height: 280px; overflow-y: auto; padding-right: 5px; margin-bottom:10px; overflow-x:hidden;">`;
+        
+        chapters.forEach(ch => {
+            let badgeBg, badgeColor, icon;
+            const stat = ch.status.toLowerCase();
+            if (stat === 'completed') { badgeBg = 'rgba(16, 185, 129, 0.15)'; badgeColor = 'var(--success)'; icon = 'fa-check'; } 
+            else if (stat === 'ongoing') { badgeBg = 'rgba(245, 158, 11, 0.15)'; badgeColor = 'var(--warning)'; icon = 'fa-spinner fa-spin'; } 
+            else { badgeBg = 'rgba(239, 68, 68, 0.15)'; badgeColor = 'var(--danger)'; icon = 'fa-clock'; }
+
+            html += `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--item-bg); border-radius:10px; margin-bottom:8px; border:1px solid var(--border-color);">
+                    <div style="overflow:hidden; padding-right:15px; flex-grow:1; cursor:pointer;" onclick="toggleTitleScroll(this)">
+                        <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px;">${ch.chapter}</div>
+                        <div style="width:100%; overflow:hidden;">
+                            <div class="ch-title" style="font-size:0.9rem; font-weight:500; color:var(--text-main); white-space:nowrap; text-overflow:ellipsis; overflow:hidden; display:inline-block; max-width:100%; transform:translateX(0px); transition: transform 0.4s linear;">${ch.title}</div>
+                        </div>
+                    </div>
+                    <div style="background:${badgeBg}; color:${badgeColor}; width:32px; height:32px; border-radius:50%; display:flex; justify-content:center; align-items:center; border:1px solid ${badgeBg}; flex-shrink:0;">
+                        <i class="fa-solid ${icon}"></i>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+        detailEl.innerHTML = html;
+        detailEl.className = "";
+        
+        recalculateAccordionHeight(detailEl);
+    }
+
+    function recalculateAccordionHeight(detailEl) {
+        const parentDetails = detailEl.closest('.card-details');
+        if (parentDetails && parentDetails.classList.contains('open')) {
+            parentDetails.style.maxHeight = parentDetails.scrollHeight + 60 + "px";
+        }
+    }
+
+    // --- HORIZONTAL UNIFIED TABLE MODAL LOGIC ---
+    function openSyllabusTable() {
+        const modal = document.getElementById('syllabusTableModal');
+        const content = document.getElementById('syllabusTableContent');
+        let html = '';
+
+        if (Object.keys(globalSyllabusData).length === 0) {
+            html = `<div style="text-align:center; padding:20px; color:var(--text-muted);">No syllabus data available to display.</div>`;
+        } else {
+            const subjects = Object.keys(globalSyllabusData);
+            let maxChapters = 0;
+            subjects.forEach(sub => {
+                if (globalSyllabusData[sub].length > maxChapters) maxChapters = globalSyllabusData[sub].length;
+            });
+
+            html += `<div style="overflow:auto; max-height:65vh; border-radius:8px; border:1px solid var(--border-color); margin-bottom:10px;">
+                        <table class="excel-table" style="min-width: max-content; white-space: nowrap;">
+                            <thead>
+                                <tr>
+                                    <th style="position: sticky; left: 0; top: -1px; background: var(--solid-bg); z-index: 10; border-right: 1px solid var(--border-color); box-shadow: 0 1px 0 var(--border-color), 0 -1px 0 var(--border-color);">Ch.</th>`;
+            
+            subjects.forEach(sub => {
+                const name = subjNames[sub] || sub;
+                html += `<th style="position: sticky; top: -1px; background: var(--solid-bg); z-index: 5; min-width: 160px; text-align: left; box-shadow: 0 1px 0 var(--border-color), 0 -1px 0 var(--border-color);">${name}</th>`;
+            });
+            
+            html += `           </tr>
+                            </thead>
+                            <tbody>`;
+            
+            for (let i = 0; i < maxChapters; i++) {
+                html += `<tr>
+                            <td style="position: sticky; left: 0; background: var(--solid-bg); z-index: 1; border-right: 1px solid var(--border-color); font-weight: 600; text-align: center;">${i + 1}</td>`;
+                
+                subjects.forEach(sub => {
+                    const chObj = globalSyllabusData[sub][i];
+                    if (chObj) {
+                        let statColor = 'var(--text-muted)';
+                        let statIcon = '';
+                        const statLower = chObj.status.toLowerCase();
+
+                        if (statLower === 'completed') { statColor = 'var(--success)'; statIcon = '<i class="fa-solid fa-check"></i>'; }
+                        else if (statLower === 'ongoing') { statColor = 'var(--warning)'; statIcon = '<i class="fa-solid fa-spinner fa-spin"></i>'; }
+                        else { statColor = 'var(--danger)'; statIcon = '<i class="fa-solid fa-clock"></i>'; }
+
+                        html += `<td>
+                                    <div style="font-weight: 500; font-size: 0.8rem; margin-bottom: 4px; white-space: normal; line-height: 1.3;">${chObj.title}</div>
+                                    <div style="color:${statColor}; font-size:0.7rem; font-weight:600;"><span style="display:inline-block; width:12px;">${statIcon}</span> ${chObj.status}</div>
+                                 </td>`;
+                    } else {
+                        html += `<td style="color: var(--text-muted); text-align: center; opacity:0.5;">-</td>`;
+                    }
+                });
+                html += `</tr>`;
+            }
+            html += `</tbody></table></div>`;
+        }
+
+        content.innerHTML = html;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSyllabusTable() {
+        document.getElementById('syllabusTableModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // --- Dynamic Results Logic ---
+    async function fetchLiveResults() {
+        const studentId = studentData['Student ID'];
+        if (!studentId) return;
+
+        const summaryEl = document.getElementById('summary-results');
+        const detailEl = document.getElementById('detail-results');
+
+        detailEl.innerHTML = `<div style="text-align:center; padding:30px 0;"><i class="fa-solid fa-circle-notch fa-spin" style="font-size:1.5rem; color:var(--primary);"></i></div>`;
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: "getResults", studentId: studentId })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const data = result.data;
+                if (data && data.length > 0) {
+                    summaryEl.innerText = `${data.length} Tests Recorded`;
+                    renderResults(data);
+                } else {
+                    summaryEl.innerText = "No tests yet";
+                    detailEl.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.85rem; font-style:italic;">${result.message || "No results available."}</div>`;
+                }
+            } else {
+                summaryEl.innerText = "Sync Failed";
+                detailEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--danger); font-size:0.85rem;">${result.message}</div>`;
+            }
+        } catch (error) {
+            summaryEl.innerText = "Connection Error";
+            detailEl.innerHTML = `<div style="text-align:center; padding:15px; color:var(--danger); font-size:0.85rem;">Unable to connect to server.</div>`;
+        }
+    }
+
+    function renderResults(results) {
+        const detailEl = document.getElementById('detail-results');
+        let html = `<div style="max-height: 280px; overflow-y: auto; padding-right: 5px;">`;
+
+        let totalPercentage = 0;
+        results.forEach(r => totalPercentage += r.percentage);
+        let avgPercentage = Math.round(totalPercentage / results.length);
+
+        html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:10px 0 15px 0; background:var(--item-bg); padding:10px 15px; border-radius:10px; border:1px solid var(--border-color);">
+                <div style="font-size:0.8rem; color:var(--text-muted); font-weight:500;">Overall Average</div>
+                <div style="font-size:1.2rem; font-weight:700; color:var(--primary);">${avgPercentage}%</div>
+            </div>
+        `;
+
+        results.forEach(res => {
+            let barColor = 'var(--success)';
+            let bgBadge = 'rgba(16, 185, 129, 0.15)';
+            let textBadge = 'var(--success)';
+
+            if (res.percentage < 40) {
+                barColor = 'var(--danger)';
+                bgBadge = 'rgba(239, 68, 68, 0.15)';
+                textBadge = 'var(--danger)';
+            } else if (res.percentage < 70) {
+                barColor = 'var(--warning)';
+                bgBadge = 'rgba(245, 158, 11, 0.15)';
+                textBadge = 'var(--warning)';
+            }
+
+            html += `
+                <div style="background:var(--item-bg); border:1px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:10px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <div>
+                            <div style="font-size:0.9rem; font-weight:600; color:var(--text-main);">${res.title}</div>
+                            <div style="font-size:0.7rem; color:var(--text-muted);"><i class="fa-regular fa-calendar" style="margin-right:3px;"></i> ${res.date}</div>
+                        </div>
+                        <div style="background:${bgBadge}; color:${textBadge}; font-size:0.8rem; font-weight:700; padding:4px 10px; border-radius:8px; display:flex; align-items:center; height:fit-content; border:1px solid ${bgBadge};">
+                            ${res.markStr}
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:4px; font-weight:500;">
+                        <span style="color:var(--text-muted);">Score</span>
+                        <span style="color:${textBadge};">${res.percentage}%</span>
+                    </div>
+                    <div style="width:100%; height:6px; background:rgba(0,0,0,0.1); border-radius:3px; overflow:hidden;">
+                        <div style="width:${res.percentage}%; height:100%; background:${barColor}; border-radius:3px;"></div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        detailEl.innerHTML = html;
+        detailEl.className = "";
+        recalculateAccordionHeight(detailEl);
+    }
+
+    // --- QR Modal Logic ---
+    function openQRModal() {
+        const modal = document.getElementById('qrModal');
+        modal.classList.add('active');
+        setTimeout(() => { modal.querySelector('.qr-zoom-box').style.transform = 'scale(1)'; modal.querySelector('.qr-zoom-box').style.opacity = '1'; }, 10);
+        document.body.style.overflow = 'hidden';
+    }
+    function closeQRModal() {
+        const modal = document.getElementById('qrModal');
+        modal.querySelector('.qr-zoom-box').style.transform = 'scale(0.95)';
+        modal.querySelector('.qr-zoom-box').style.opacity = '0';
+        setTimeout(() => { modal.classList.remove('active'); }, 300);
+        document.body.style.overflow = 'auto';
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                if(overlay.id === 'profileModal') closeProfile();
+                if(overlay.id === 'syllabusTableModal') closeSyllabusTable();
+                if(overlay.id === 'qrModal') closeQRModal();
+            }
+        });
+    });
+
+    // --- On Load Setup ---
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!studentData['Student Name']) return;
+
+        const studentId = studentData['Student ID'];
+        const fullName = studentData['Student Name'];
+        const monthlyFee = parseFloat(studentData['Monthly Tuition Fee']) || 0;
+        const lastPaid = parseFloat(studentData['Last Fee Paid Amount']) || 0;
+        const paidUpToStr = studentData['Fee Paid Up To'];
+        const admDateStr = studentData['Admission Date'];
+        
+        let rawImgUrl = studentData['Profile Image'] || studentData['Photo'] || studentData['Image'];
+        if (!rawImgUrl) {
+            const keys = Object.keys(studentData);
+            if(keys.length >= 15) rawImgUrl = studentData[keys[14]]; 
+        }
+
+        if (rawImgUrl && typeof rawImgUrl === 'string' && rawImgUrl.trim() !== '') {
+            let finalImgUrl = rawImgUrl.trim();
+            if (finalImgUrl.includes('drive.google.com')) {
+                const match = finalImgUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || finalImgUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) finalImgUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+            }
+            const triggerBtn = document.getElementById('profileTriggerBtn');
+            const modalAvatar = document.getElementById('modalAvatarBox');
+            if(triggerBtn) triggerBtn.innerHTML = `<img src="${finalImgUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+            if(modalAvatar) modalAvatar.innerHTML = `<img src="${finalImgUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+        }
+        
+        fetchLiveAttendance(currentCalDate, true);
+        fetchLiveSyllabus(); 
+        fetchLiveResults(); 
+
+        const hour = new Date().getHours();
+        let greeting = 'Good Evening';
+        if (hour < 12) greeting = 'Good Morning';
+        else if (hour < 18) greeting = 'Good Afternoon';
+
+        document.getElementById('greeting-time').innerText = greeting + ",";
+        document.getElementById('welcome-name').innerText = fullName;
+        
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerHTML = `<i class="fa-regular fa-calendar"></i> ` + new Date().toLocaleDateString('en-IN', dateOptions);
+
+        const alertBox = document.getElementById('fee-alert-box');
+        const alertIcon = document.getElementById('fee-alert-icon');
+        const alertTitle = document.getElementById('fee-alert-title');
+        const alertMessage = document.getElementById('fee-alert-message');
+
+        const paidUpToDate = parseDateDDMMYYYY(paidUpToStr) || new Date(0);
+        let totalDue = 0;
+
+        // --- Core Alert & Total Due Logic ---
+        if (parseDateDDMMYYYY(paidUpToStr)) {
+            alertBox.style.display = 'flex';
+            let monthsDue = 0;
+            let checkDate = new Date(paidUpToDate);
+            checkDate.setMonth(checkDate.getMonth() + 1);
+            const today = new Date();
+            today.setHours(0,0,0,0); 
+            let latestDueDate = new Date(paidUpToDate);
+            
+            while (today >= checkDate) {
+                monthsDue++;
+                latestDueDate = new Date(checkDate);
+                checkDate.setMonth(checkDate.getMonth() + 1);
+            }
+            const pendingFromLastMonth = monthlyFee - lastPaid;
+            totalDue = (monthsDue * monthlyFee) + pendingFromLastMonth;
+
+            if (totalDue > 0) {
+                alertBox.className = 'fee-alert-box fee-alert-danger';
+                alertIcon.className = 'fa-solid fa-circle-exclamation';
+                alertTitle.innerText = 'Action Required: Pending Dues';
+                if (monthsDue > 0) {
+                    alertMessage.innerHTML = `Your fee is cleared up to <strong style="color:var(--text-main);">${paidUpToStr}</strong>. An amount of <strong style="color:var(--danger);">₹${totalDue}</strong> was required to be paid by <strong style="color:var(--text-main);">${formatDateDDMMYYYY(latestDueDate)}</strong>. Please clear your dues.`;
+                } else {
+                    alertMessage.innerHTML = `Your fee is cleared up to <strong style="color:var(--text-main);">${paidUpToStr}</strong>, but there is a pending balance of <strong style="color:var(--danger);">₹${totalDue}</strong> from your last payment. Please clear your dues.`;
+                }
+            } else if (totalDue < 0) {
+                alertBox.className = 'fee-alert-box fee-alert-success';
+                alertIcon.className = 'fa-solid fa-shield-check';
+                alertTitle.innerText = 'Account Up to Date (Advance)';
+                alertMessage.innerHTML = `Your tuition fee is cleared up to <strong style="color:var(--text-main);">${paidUpToStr}</strong> with an advance balance of <strong style="color:var(--success);">₹${Math.abs(totalDue)}</strong>.`;
+            } else {
+                alertBox.className = 'fee-alert-box fee-alert-success';
+                alertIcon.className = 'fa-solid fa-shield-check';
+                alertTitle.innerText = 'Account Up to Date';
+                alertMessage.innerHTML = `Your tuition fee is fully cleared up to <strong style="color:var(--text-main);">${paidUpToStr}</strong>. The next payment of ₹${monthlyFee} will be due on <strong style="color:var(--text-main);">${formatDateDDMMYYYY(checkDate)}</strong>.`;
+            }
+        }
+
+        // --- Render Payment Desk using SECURE variables from Backend ---
+        document.getElementById('payment-desk-container').style.display = 'block';
+        const upiBtn = document.getElementById('upi-pay-btn');
+        const noDuesMsg = document.getElementById('no-dues-msg');
+        
+        // Fetch secure variables injected by the backend
+        const backendUpiId = studentData['upi_id'];
+        const backendPayeeName = studentData['payee_name'];
+        
+        if (totalDue > 0 && backendUpiId) {
+            document.getElementById('pay-btn-amount').innerText = totalDue;
+            upiBtn.style.display = 'block';
+            noDuesMsg.style.display = 'none';
+            upiBtn.href = `upi://pay?pa=${backendUpiId}&pn=${encodeURIComponent(backendPayeeName)}&am=${totalDue}&cu=INR`;
+        } else if (totalDue > 0) {
+            // Edge case: Backend didn't send UPI ID
+            document.getElementById('pay-btn-amount').innerText = totalDue;
+            upiBtn.style.display = 'block';
+            upiBtn.removeAttribute('href');
+            upiBtn.onclick = () => alert("Payment configuration missing. Please contact the administrator.");
+            noDuesMsg.style.display = 'none';
+        } else {
+            upiBtn.style.display = 'none';
+            noDuesMsg.style.display = 'block';
+        }
+
+        // --- Dynamic Billing Cycles ---
+        if (admDateStr) {
+            const slotsContainer = document.getElementById('fee-slots-container');
+            const slotsList = document.getElementById('fee-slots-list');
+            let admDate = parseDateDDMMYYYY(admDateStr);
+            
+            if (admDate) {
+                let today = new Date();
+                today.setHours(0,0,0,0);
+                
+                let slots = [];
+                let currentStart = new Date(admDate);
+                let safeCounter = 0;
+                
+                while (safeCounter < 120) { 
+                    safeCounter++;
+                    let currentEnd = new Date(currentStart);
+                    currentEnd.setMonth(currentEnd.getMonth() + 1);
+                    
+                    let isPaid = paidUpToDate >= currentEnd;
+                    let isCurrent = currentEnd > today && currentStart <= today; 
+                    let isFuture = currentStart > today;
+
+                    let bg, textColor, icon, statusTxt;
+                    
+                    if (isPaid) {
+                        bg = 'rgba(16, 185, 129, 0.15)'; textColor = 'var(--success)'; icon = 'fa-check'; statusTxt = 'Paid';
+                    } else if (isFuture || isCurrent || currentEnd > today) {
+                        bg = 'rgba(245, 158, 11, 0.15)'; textColor = 'var(--warning)'; icon = 'fa-clock'; statusTxt = 'Current';
+                    } else {
+                        bg = 'rgba(239, 68, 68, 0.15)'; textColor = 'var(--danger)'; icon = 'fa-xmark'; statusTxt = 'Unpaid';
+                    }
+                    
+                    slots.push({
+                        startStr: formatDateDDMMYYYY(currentStart),
+                        endStr: formatDateDDMMYYYY(currentEnd),
+                        bg: bg,
+                        textColor: textColor,
+                        icon: icon,
+                        statusTxt: statusTxt
+                    });
+                    
+                    currentStart = new Date(currentEnd);
+                    
+                    if (currentStart > today && currentStart >= paidUpToDate) {
+                        break;
+                    }
+                }
+                
+                slots.reverse(); 
+                
+                let slotsHtml = '';
+                slots.forEach(slot => {
+                    slotsHtml += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--btn-bg); border-radius:8px; margin-bottom:8px; border:1px solid var(--border-color);">
+                            <div style="font-size:0.75rem; color:var(--text-main); font-weight:500;">
+                                ${slot.startStr} <i class="fa-solid fa-arrow-right" style="color:var(--text-muted); font-size:0.6rem; margin:0 4px;"></i> ${slot.endStr}
+                            </div>
+                            <div style="font-size:0.7rem; font-weight:600; padding:4px 10px; border-radius:12px; background:${slot.bg}; color:${slot.textColor}; display:flex; align-items:center; gap:5px;">
+                                <i class="fa-solid ${slot.icon}"></i> ${slot.statusTxt}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                slotsList.innerHTML = slotsHtml;
+                slotsContainer.style.display = 'block';
+            }
+        }
+
+        document.getElementById('summary-fee-paid').innerText = `Cleared Up To: ${paidUpToStr || 'Pending'}`;
+        document.getElementById('val-monthly-fee').innerText = `₹${monthlyFee}`;
+        document.getElementById('val-last-paid').innerText = `₹${lastPaid}`;
+        document.getElementById('val-paid-upto').innerText = paidUpToStr || 'Pending';
+
+        document.getElementById('modal-name').innerText = fullName;
+        document.getElementById('modal-id').innerText = `ID: ${studentId || '-'}`;
+        document.getElementById('val-class').innerText = `Class ${studentData['Class'] || '-'}`;
+        document.getElementById('val-batch').innerText = `${studentData['Batch'] || '-'} / ${studentData['Group'] || '-'}`;
+        const schoolStr = studentData['School'] ? studentData['School'] : '-';
+        const boardStr = studentData['Board'] ? ` (${studentData['Board']})` : '';
+        document.getElementById('val-school').innerText = schoolStr + boardStr;
+        document.getElementById('val-admission').innerText = studentData['Admission Date'] || '-';
+    });
+
+    const profileModal = document.getElementById('profileModal');
+    function openProfile() { profileModal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeProfile() { profileModal.classList.remove('active'); document.body.style.overflow = 'auto'; }
+    function logout() { sessionStorage.removeItem('loggedInStudent'); window.location.replace('index.html'); }
+</script>
+</body>
+</html>
